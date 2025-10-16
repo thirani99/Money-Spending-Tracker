@@ -1,38 +1,37 @@
-// import jwt from "jsonwebtoken";
-// import { Request, Response, NextFunction } from "express";
-
-// const JWT_SECRET = process.env.JWT_SECRET || "fallback_secret";
-
-// export const authenticate = (req: Request, res: Response, next: NextFunction) => {
-//   const token = req.headers.authorization?.split(" ")[1];
-//   if (!token) return res.status(401).json({ message: "Access denied" });
-
-//   try {
-//     const decoded = jwt.verify(token, JWT_SECRET);
-//     (req as any).user = decoded; // attach user info
-//     next();
-//   } catch {
-//     res.status(403).json({ message: "Invalid token" });
-//   }
-// };
-
-
+import jwt, { JwtPayload } from "jsonwebtoken";
 import { Request, Response, NextFunction } from "express";
-import jwt from "jsonwebtoken";
 
-const JWT_SECRET = process.env.JWT_SECRET!;
+interface AuthRequest extends Request {
+  user?: string | JwtPayload;
+}
 
-export const authenticate = (req: Request, res: Response, next: NextFunction) => {
+console.log("JWT_SECRET =", process.env.JWT_SECRET);
+
+
+export const authenticate = (req: AuthRequest, res: Response, next: NextFunction) => {
   const authHeader = req.headers.authorization;
-  const token = authHeader?.split(" ")[1]; // Bearer <token>
+  console.log("Auth header:", req.header("Authorization"));
+  if (!authHeader) return res.status(401).json({ message: "No token provided" });
 
-  if (!token) return res.status(401).json({ message: "Access denied" });
+  const token = authHeader.split(" ")[1];
+  if (!token) return res.status(401).json({ message: "Invalid token format" });
+
+  const secret = process.env.JWT_SECRET;
+  if (!secret) return res.status(500).json({ message: "JWT secret not set in environment" });
 
   try {
-    const decoded = jwt.verify(token, JWT_SECRET);
-    (req as any).user = decoded; // attach decoded payload to req
+    const decoded = jwt.verify(token, process.env.JWT_SECRET as string) as { id: string; email?: string };
+    req.user = { _id: decoded.id, email: decoded.email }; // important: map id to _id
+
+    // const decoded = jwt.verify(token, process.env.JWT_SECRET as string);
+    // (req as AuthRequest).user = decoded;
+
+    // const decoded = jwt.verify(token, secret);
+    // req.user = decoded;
     next();
   } catch (err) {
-    res.status(403).json({ message: "Invalid token" });
+    return res.status(401).json({ message: "Token verification failed", error: err });
   }
 };
+
+

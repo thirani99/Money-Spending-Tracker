@@ -1,11 +1,12 @@
+import dotenv from "dotenv";
+dotenv.config();
+
 import express from "express";
 import mongoose from "mongoose";
 import cors from "cors";
-import dotenv from "dotenv";
 import expenseRoutes from "./routes/expense.routes";
 import authRoutes from "./routes/auth.routes";
 
-dotenv.config();
 
 const app = express();
 app.use(cors());

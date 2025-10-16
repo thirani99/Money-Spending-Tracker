@@ -22,10 +22,20 @@ export default function LoginPage() {
         password,
       });
       console.log(response.data);
-      alert("login successfully!");
 
-        console.log(" Redirecting to login page");
-      router.push("/expenses");
+
+      const token = response.data.token;
+      if (typeof window !== "undefined") {
+        localStorage.setItem("token", token);
+        console.log("Token stored:", token);
+      }
+
+      alert("Login successfully!");
+
+      // Optional small delay for debugging
+      setTimeout(() => {
+        router.push("/expenses");
+      }, 500);
       
     } catch (err: any) {
       console.error(err.response?.data || err.message);

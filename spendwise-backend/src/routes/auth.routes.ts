@@ -4,7 +4,7 @@ import jwt from "jsonwebtoken";
 import { User } from "../models/user.model";
 
 // Secret key (store in .env)
-const JWT_SECRET = process.env.JWT_SECRET! || "fallback secre";
+const JWT_SECRET = process.env.JWT_SECRET!;
 
 const router = express.Router();
 
@@ -51,6 +51,7 @@ router.post("/register", async (req: Request, res: Response) => {
 
 
 
+
 router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -63,12 +64,19 @@ router.post("/login", async (req, res) => {
     const isMatch = await user.comparePassword(password);
     if (!isMatch) return res.status(400).json({ message: "Invalid credentials" });
 
-    // Generate JWT token
+    // // Generate JWT token
+    // const token = jwt.sign(
+    //   { id: user._id, email: user.email },
+    //   JWT_SECRET,
+    //   { expiresIn: "1d" }
+    // );
+
     const token = jwt.sign(
       { id: user._id, email: user.email },
-      JWT_SECRET,
+      process.env.JWT_SECRET as string,
       { expiresIn: "1d" }
     );
+
 
     // Send response
     res.status(200).json({

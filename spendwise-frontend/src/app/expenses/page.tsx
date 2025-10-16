@@ -75,6 +75,8 @@ export default function ExpenseForm() {
     }
   };
 
+  
+
   // Delete 
   const handleDelete = async (id: string) => {
     try {

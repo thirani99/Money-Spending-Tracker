@@ -6,13 +6,14 @@ import {
   updateExpense,
   deleteExpense
 } from "../contoller/expenses.controller";
+import { authenticate } from "../middleware/authMiddleware";
 
 const router = Router();
 
-router.post("/post", createExpense);
-router.get("/get", getExpenses);
-// router.get("/get/:id", getExpense);
-router.put("/put/:id", updateExpense);
-router.delete("/delete/:id", deleteExpense);
+router.post("/post",authenticate, createExpense);
+router.get("/get",authenticate, getExpenses);
+// router.get("/get/:id",authenticate, getExpense);
+router.put("/put/:id",authenticate, updateExpense);
+router.delete("/delete/:id",authenticate, deleteExpense);
 
 export default router;

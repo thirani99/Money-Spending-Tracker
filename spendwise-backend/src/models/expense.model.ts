@@ -13,7 +13,8 @@ const ExpenseSchema = new Schema<IExpense>({
   title: { type: String, required: true },
   amount: { type: Number, required: true },
   category: { type: String, required: true },
-  date: { type: Date, default: Date.now }
+  // date: { type: Date, default: Date.now }
+   date: { type: Date, required: true }
 });
 
 export const Expense =mongoose.model<IExpense>("Expense", ExpenseSchema);
